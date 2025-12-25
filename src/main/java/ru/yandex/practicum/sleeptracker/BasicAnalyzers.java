@@ -70,6 +70,7 @@ public class BasicAnalyzers {
                     .count();
         };
     }
+
     public static SleepAnalyzer determineChronotype() {
         return sessions -> {
             if (sessions.isEmpty()) {
