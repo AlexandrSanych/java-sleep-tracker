@@ -45,39 +45,4 @@ public class SleepingSession {
         return sleepStart.isBefore(morningEnd) && sleepEnd.isAfter(morningStart);
     }
 
-    // Определяет тип ночи для хронотипа
-    public String getChronotypeForNight() {
-        // Проверяем, является ли это ночной сессией (пересекает ночь 00:00-06:00)
-        LocalDate sleepDate = sleepStart.toLocalDate();
-        if (!intersectsNight(sleepDate) && !intersectsNight(sleepDate.plusDays(1))) {
-            return ""; // Дневной сон или не пересекает ночь - игнорируем
-        }
-
-        int sleepHour = sleepStart.getHour();
-        int sleepMinute = sleepStart.getMinute();
-        int wakeHour = sleepEnd.getHour();
-        int wakeMinute = sleepEnd.getMinute();
-
-        int sleepTime = sleepHour * 60 + sleepMinute;
-        int wakeTime = wakeHour * 60 + wakeMinute;
-
-        boolean isOwl, isLark;
-
-        if (wakeTime < sleepTime) {
-            // Сон через полночь
-            isOwl = sleepTime >= 23 * 60 && (wakeTime + 24 * 60) >= 9 * 60;
-            isLark = sleepTime < 22 * 60 && wakeTime < 7 * 60;
-        } else {
-            // Сон в пределах одних суток
-            // Для засыпания между 0:00 и 6:00 - корректируем
-            if (sleepTime < 6 * 60) {
-                sleepTime += 24 * 60;
-                wakeTime += 24 * 60;
-            }
-            isOwl = sleepTime >= 23 * 60 && wakeTime >= 9 * 60;
-            isLark = sleepTime < 22 * 60 && wakeTime < 7 * 60;
-        }
-
-        return isOwl ? "Сова" : (isLark ? "Жаворонок" : "Голубь");
-    }
 }

@@ -8,6 +8,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class SleepTrackerApp {
     private static final DateTimeFormatter DATE_TIME_FORMATTER =
@@ -29,13 +30,13 @@ public class SleepTrackerApp {
 
         // Список аналитических функций
         List<SleepAnalyzer> analyzers = new ArrayList<>();
-        analyzers.add(BasicAnalyzers.totalSessionsCount());
-        analyzers.add(BasicAnalyzers.minDuration());
-        analyzers.add(BasicAnalyzers.maxDuration());
-        analyzers.add(BasicAnalyzers.averageDuration());
-        analyzers.add(BasicAnalyzers.badQualitySessionsCount());
-        analyzers.add(BasicAnalyzers.sleeplessNightsCount());
-        analyzers.add(BasicAnalyzers.determineChronotype());
+        analyzers.add(new TotalSessionsCount());
+        analyzers.add(new MinDuration());
+        analyzers.add(new MaxDuration());
+        analyzers.add(new AverageDuration());
+        analyzers.add(new BadQualitySessionsCount());
+        analyzers.add(new SleeplessNightsCount());
+        analyzers.add(new DetermineChronotype());
 
         // Выводим результаты анализа
         System.out.println("=== Анализ сна ===");
@@ -55,7 +56,7 @@ public class SleepTrackerApp {
                 "Хронотип пользователя"
         };
 
-        // Используем IntStream вместо традиционного цикла for
+
         IntStream.range(0, analyzers.size())
                 .forEach(i -> {
                     Object result = analyzers.get(i).analyze(sessions);
@@ -63,13 +64,12 @@ public class SleepTrackerApp {
                 });
     }
 
-    // Читает сессии сна из файла
+
     private static List<SleepingSession> readSleepSessions(String filePath) {
         List<SleepingSession> sessions = new ArrayList<>();
 
-        try {
-            Files.lines(Paths.get(filePath))
-                    .filter(line -> !line.trim().isEmpty())
+        try (Stream<String> lines = Files.lines(Paths.get(filePath))) {
+            lines.filter(line -> !line.trim().isEmpty())
                     .forEach(line -> {
                         try {
                             String[] parts = line.split(";");

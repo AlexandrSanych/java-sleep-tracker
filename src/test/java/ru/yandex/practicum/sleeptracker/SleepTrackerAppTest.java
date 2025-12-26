@@ -12,16 +12,193 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class SleepTrackerAppTest {
 
-    // ========== Тесты для totalSessionsCount() ==========
+    // ========== Тесты для TotalSessionsCount ==========
 
     @Test
     public void testTotalSessionsCountEmptyList() {
-        List<SleepingSession> sessions = Collections.emptyList();
-        assertEquals(0, BasicAnalyzers.totalSessionsCount().analyze(sessions));
+        SleepAnalyzer analyzer = new TotalSessionsCount();
+        assertEquals(0, analyzer.analyze(Collections.emptyList()));
+    }
+
+    @Test
+    public void testTotalSessionsCountSingleSession() {
+        SleepAnalyzer analyzer = new TotalSessionsCount();
+        List<SleepingSession> sessions = Collections.singletonList(
+                new SleepingSession(
+                        LocalDateTime.of(2025, 10, 1, 22, 0),
+                        LocalDateTime.of(2025, 10, 2, 6, 0),
+                        SleepQuality.GOOD
+                )
+        );
+        assertEquals(1, analyzer.analyze(sessions));
     }
 
     @Test
     public void testTotalSessionsCountMultipleSessions() {
+        SleepAnalyzer analyzer = new TotalSessionsCount();
+        List<SleepingSession> sessions = Arrays.asList(
+                new SleepingSession(
+                        LocalDateTime.of(2025, 10, 1, 22, 0),
+                        LocalDateTime.of(2025, 10, 2, 6, 0),
+                        SleepQuality.GOOD
+                ),
+                new SleepingSession(
+                        LocalDateTime.of(2025, 10, 2, 23, 0),
+                        LocalDateTime.of(2025, 10, 3, 7, 0),
+                        SleepQuality.NORMAL
+                ),
+                new SleepingSession(
+                        LocalDateTime.of(2025, 10, 3, 14, 0),
+                        LocalDateTime.of(2025, 10, 3, 15, 0),
+                        SleepQuality.BAD
+                )
+        );
+        assertEquals(3, analyzer.analyze(sessions));
+    }
+
+    // ========== Тесты для MinDuration ==========
+
+    @Test
+    public void testMinDurationEmptyList() {
+        SleepAnalyzer analyzer = new MinDuration();
+        assertEquals(0L, analyzer.analyze(Collections.emptyList()));
+    }
+
+    @Test
+    public void testMinDurationSingleSession() {
+        SleepAnalyzer analyzer = new MinDuration();
+        List<SleepingSession> sessions = Collections.singletonList(
+                new SleepingSession(
+                        LocalDateTime.of(2025, 10, 1, 22, 0), // 480 минут
+                        LocalDateTime.of(2025, 10, 2, 6, 0),
+                        SleepQuality.GOOD
+                )
+        );
+        assertEquals(480L, analyzer.analyze(sessions));
+    }
+
+    @Test
+    public void testMinDurationMultipleSessions() {
+        SleepAnalyzer analyzer = new MinDuration();
+        List<SleepingSession> sessions = Arrays.asList(
+                new SleepingSession(
+                        LocalDateTime.of(2025, 10, 1, 22, 0), // 480 минут
+                        LocalDateTime.of(2025, 10, 2, 6, 0),
+                        SleepQuality.GOOD
+                ),
+                new SleepingSession(
+                        LocalDateTime.of(2025, 10, 2, 14, 0), // 60 минут
+                        LocalDateTime.of(2025, 10, 2, 15, 0),
+                        SleepQuality.NORMAL
+                ),
+                new SleepingSession(
+                        LocalDateTime.of(2025, 10, 2, 23, 0), // 480 минут
+                        LocalDateTime.of(2025, 10, 3, 7, 0),
+                        SleepQuality.NORMAL
+                )
+        );
+        assertEquals(60L, analyzer.analyze(sessions));
+    }
+
+    // ========== Тесты для MaxDuration ==========
+
+    @Test
+    public void testMaxDurationEmptyList() {
+        SleepAnalyzer analyzer = new MaxDuration();
+        assertEquals(0L, analyzer.analyze(Collections.emptyList()));
+    }
+
+    @Test
+    public void testMaxDurationSingleSession() {
+        SleepAnalyzer analyzer = new MaxDuration();
+        List<SleepingSession> sessions = Collections.singletonList(
+                new SleepingSession(
+                        LocalDateTime.of(2025, 10, 1, 22, 0), // 480 минут
+                        LocalDateTime.of(2025, 10, 2, 6, 0),
+                        SleepQuality.GOOD
+                )
+        );
+        assertEquals(480L, analyzer.analyze(sessions));
+    }
+
+    @Test
+    public void testMaxDurationMultipleSessions() {
+        SleepAnalyzer analyzer = new MaxDuration();
+        List<SleepingSession> sessions = Arrays.asList(
+                new SleepingSession(
+                        LocalDateTime.of(2025, 10, 1, 22, 0), // 480 минут
+                        LocalDateTime.of(2025, 10, 2, 6, 0),
+                        SleepQuality.GOOD
+                ),
+                new SleepingSession(
+                        LocalDateTime.of(2025, 10, 2, 14, 0), // 60 минут
+                        LocalDateTime.of(2025, 10, 2, 15, 0),
+                        SleepQuality.NORMAL
+                ),
+                new SleepingSession(
+                        LocalDateTime.of(2025, 10, 2, 23, 0), // 480 минут
+                        LocalDateTime.of(2025, 10, 3, 7, 0),
+                        SleepQuality.NORMAL
+                )
+        );
+        assertEquals(480L, analyzer.analyze(sessions));
+    }
+
+    // ========== Тесты для AverageDuration ==========
+
+    @Test
+    public void testAverageDurationEmptyList() {
+        SleepAnalyzer analyzer = new AverageDuration();
+        assertEquals(0.0, analyzer.analyze(Collections.emptyList()));
+    }
+
+    @Test
+    public void testAverageDurationSingleSession() {
+        SleepAnalyzer analyzer = new AverageDuration();
+        List<SleepingSession> sessions = Collections.singletonList(
+                new SleepingSession(
+                        LocalDateTime.of(2025, 10, 1, 22, 0), // 480 минут
+                        LocalDateTime.of(2025, 10, 2, 6, 0),
+                        SleepQuality.GOOD
+                )
+        );
+        assertEquals(480.0, (Double) analyzer.analyze(sessions), 0.01);
+    }
+
+    @Test
+    public void testAverageDurationMultipleSessions() {
+        SleepAnalyzer analyzer = new AverageDuration();
+        List<SleepingSession> sessions = Arrays.asList(
+                new SleepingSession(
+                        LocalDateTime.of(2025, 10, 1, 22, 0), // 480 минут
+                        LocalDateTime.of(2025, 10, 2, 6, 0),
+                        SleepQuality.GOOD
+                ),
+                new SleepingSession(
+                        LocalDateTime.of(2025, 10, 2, 14, 0), // 60 минут
+                        LocalDateTime.of(2025, 10, 2, 15, 0),
+                        SleepQuality.NORMAL
+                ),
+                new SleepingSession(
+                        LocalDateTime.of(2025, 10, 2, 23, 0), // 480 минут
+                        LocalDateTime.of(2025, 10, 3, 7, 0),
+                        SleepQuality.NORMAL
+                )
+        );
+        assertEquals(340.0, (Double) analyzer.analyze(sessions), 0.01);
+    }
+
+    // ========== Тесты для BadQualitySessionsCount ==========
+
+    @Test
+    public void testBadQualitySessionsCountEmptyList() {
+        SleepAnalyzer analyzer = new BadQualitySessionsCount();
+        assertEquals(0L, analyzer.analyze(Collections.emptyList()));
+    }
+
+    @Test
+    public void testBadQualitySessionsCountNoBadQuality() {
+        SleepAnalyzer analyzer = new BadQualitySessionsCount();
         List<SleepingSession> sessions = Arrays.asList(
                 new SleepingSession(
                         LocalDateTime.of(2025, 10, 1, 22, 0),
@@ -34,109 +211,12 @@ public class SleepTrackerAppTest {
                         SleepQuality.NORMAL
                 )
         );
-        assertEquals(2, BasicAnalyzers.totalSessionsCount().analyze(sessions));
-    }
-
-    // ========== Тесты для minDuration() ==========
-
-    @Test
-    public void testMinDurationEmptyList() {
-        List<SleepingSession> sessions = Collections.emptyList();
-        assertEquals(0L, BasicAnalyzers.minDuration().analyze(sessions));
+        assertEquals(0L, analyzer.analyze(sessions));
     }
 
     @Test
-    public void testMinDurationMultipleSessions() {
-        List<SleepingSession> sessions = Arrays.asList(
-                new SleepingSession(
-                        LocalDateTime.of(2025, 10, 1, 22, 0), // 480 минут
-                        LocalDateTime.of(2025, 10, 2, 6, 0),
-                        SleepQuality.GOOD
-                ),
-                new SleepingSession(
-                        LocalDateTime.of(2025, 10, 2, 14, 0), // 60 минут
-                        LocalDateTime.of(2025, 10, 2, 15, 0),
-                        SleepQuality.NORMAL
-                ),
-                new SleepingSession(
-                        LocalDateTime.of(2025, 10, 2, 23, 0), // 480 минут
-                        LocalDateTime.of(2025, 10, 3, 7, 0),
-                        SleepQuality.NORMAL
-                )
-        );
-        assertEquals(60L, BasicAnalyzers.minDuration().analyze(sessions));
-    }
-
-    // ========== Тесты для maxDuration() ==========
-
-    @Test
-    public void testMaxDurationEmptyList() {
-        List<SleepingSession> sessions = Collections.emptyList();
-        assertEquals(0L, BasicAnalyzers.maxDuration().analyze(sessions));
-    }
-
-    @Test
-    public void testMaxDurationMultipleSessions() {
-        List<SleepingSession> sessions = Arrays.asList(
-                new SleepingSession(
-                        LocalDateTime.of(2025, 10, 1, 22, 0), // 480 минут
-                        LocalDateTime.of(2025, 10, 2, 6, 0),
-                        SleepQuality.GOOD
-                ),
-                new SleepingSession(
-                        LocalDateTime.of(2025, 10, 2, 14, 0), // 60 минут
-                        LocalDateTime.of(2025, 10, 2, 15, 0),
-                        SleepQuality.NORMAL
-                ),
-                new SleepingSession(
-                        LocalDateTime.of(2025, 10, 2, 23, 0), // 480 минут
-                        LocalDateTime.of(2025, 10, 3, 7, 0),
-                        SleepQuality.NORMAL
-                )
-        );
-        assertEquals(480L, BasicAnalyzers.maxDuration().analyze(sessions));
-    }
-
-    // ========== Тесты для averageDuration() ==========
-
-    @Test
-    public void testAverageDurationEmptyList() {
-        List<SleepingSession> sessions = Collections.emptyList();
-        assertEquals(0.0, BasicAnalyzers.averageDuration().analyze(sessions));
-    }
-
-    @Test
-    public void testAverageDurationMultipleSessions() {
-        List<SleepingSession> sessions = Arrays.asList(
-                new SleepingSession(
-                        LocalDateTime.of(2025, 10, 1, 22, 0), // 480 минут
-                        LocalDateTime.of(2025, 10, 2, 6, 0),
-                        SleepQuality.GOOD
-                ),
-                new SleepingSession(
-                        LocalDateTime.of(2025, 10, 2, 14, 0), // 60 минут
-                        LocalDateTime.of(2025, 10, 2, 15, 0),
-                        SleepQuality.NORMAL
-                ),
-                new SleepingSession(
-                        LocalDateTime.of(2025, 10, 2, 23, 0), // 480 минут
-                        LocalDateTime.of(2025, 10, 3, 7, 0),
-                        SleepQuality.NORMAL
-                )
-        );
-        assertEquals(340.0, (Double) BasicAnalyzers.averageDuration().analyze(sessions), 0.01);
-    }
-
-    // ========== Тесты для badQualitySessionsCount() ==========
-
-    @Test
-    public void testBadQualitySessionsCountEmptyList() {
-        List<SleepingSession> sessions = Collections.emptyList();
-        assertEquals(0L, BasicAnalyzers.badQualitySessionsCount().analyze(sessions));
-    }
-
-    @Test
-    public void testBadQualitySessionsCountMultipleSessions() {
+    public void testBadQualitySessionsCountMultipleBadQuality() {
+        SleepAnalyzer analyzer = new BadQualitySessionsCount();
         List<SleepingSession> sessions = Arrays.asList(
                 new SleepingSession(
                         LocalDateTime.of(2025, 10, 1, 22, 0),
@@ -159,296 +239,337 @@ public class SleepTrackerAppTest {
                         SleepQuality.BAD
                 )
         );
-        assertEquals(2L, BasicAnalyzers.badQualitySessionsCount().analyze(sessions));
+        assertEquals(2L, analyzer.analyze(sessions));
     }
 
-    // ========== Тесты для sleeplessNightsCount() ==========
+    // ========== Тесты для SleeplessNightsCount ==========
 
     @Test
-    public void testIntersectsNight() {
-        // Тест 1: Дневной сон 14:00-15:00 НЕ должен пересекать ночь 01.10
-        SleepingSession daySession = new SleepingSession(
-                LocalDateTime.of(2025, 10, 1, 14, 0),
-                LocalDateTime.of(2025, 10, 1, 15, 0),
-                SleepQuality.GOOD
-        );
-        assertFalse(daySession.intersectsNight(LocalDate.of(2025, 10, 1)));
-
-        // Тест 2: Утренний сон 7:00-11:00 НЕ должен пересекать ночь 01.10
-        SleepingSession morningSession = new SleepingSession(
-                LocalDateTime.of(2025, 10, 1, 7, 0),
-                LocalDateTime.of(2025, 10, 1, 11, 0),
-                SleepQuality.GOOD
-        );
-        assertFalse(morningSession.intersectsNight(LocalDate.of(2025, 10, 1)));
-
-        // Тест 3: Ночной сон 23:00-3:00 должен пересекать ночь 02.10
-        SleepingSession nightSession1 = new SleepingSession(
-                LocalDateTime.of(2025, 10, 1, 23, 0),
-                LocalDateTime.of(2025, 10, 2, 3, 0),
-                SleepQuality.GOOD
-        );
-        assertFalse(nightSession1.intersectsNight(LocalDate.of(2025, 10, 1)));
-        assertTrue(nightSession1.intersectsNight(LocalDate.of(2025, 10, 2)));
+    public void testSleeplessNightsCountEmptyList() {
+        SleepAnalyzer analyzer = new SleeplessNightsCount();
+        assertEquals(0L, analyzer.analyze(Collections.emptyList()));
     }
 
     @Test
-    public void testSleeplessNightsCountFirstSleepBeforeNoon() {
-        // Тест 1: Утренний сон 7:00-11:00 (начинается до 12:00)
-        List<SleepingSession> sessions1 = Arrays.asList(
-                new SleepingSession(
-                        LocalDateTime.of(2025, 10, 1, 7, 0),
-                        LocalDateTime.of(2025, 10, 1, 11, 0),
-                        SleepQuality.GOOD
-                )
-        );
-        assertEquals(1L, BasicAnalyzers.sleeplessNightsCount().analyze(sessions1));
-    }
-
-    @Test
-    public void testSleeplessNightsCountFirstSleepAfterNoon() {
-        // Тест 2: Ночной сон 23:00-3:00 (начинается после 12:00)
-        List<SleepingSession> sessions2 = Arrays.asList(
+    public void testSleeplessNightsCountNoSleeplessNights() {
+        SleepAnalyzer analyzer = new SleeplessNightsCount();
+        // Все ночи со сном
+        List<SleepingSession> sessions = Arrays.asList(
                 new SleepingSession(
                         LocalDateTime.of(2025, 10, 1, 23, 0),
-                        LocalDateTime.of(2025, 10, 2, 3, 0),
-                        SleepQuality.GOOD
-                )
-        );
-        assertEquals(0L, BasicAnalyzers.sleeplessNightsCount().analyze(sessions2));
-    }
-
-    @Test
-    public void testSleeplessNightsCountSleepCrossingMidnight() {
-        // Тест 3: Сон 20:00-2:00 (начинается после 12:00)
-        List<SleepingSession> sessions3 = Arrays.asList(
-                new SleepingSession(
-                        LocalDateTime.of(2025, 10, 1, 20, 0),
-                        LocalDateTime.of(2025, 10, 2, 2, 0),
-                        SleepQuality.GOOD
-                )
-        );
-        assertEquals(0L, BasicAnalyzers.sleeplessNightsCount().analyze(sessions3));
-    }
-
-    @Test
-    public void testSleeplessNightsCountMultipleSessions() {
-        // Тест 4: Несколько сессий сна
-        List<SleepingSession> sessions4 = Arrays.asList(
-                new SleepingSession(
-                        LocalDateTime.of(2025, 10, 1, 23, 0),
+                        // Ночной сон (ночь 01.10)
                         LocalDateTime.of(2025, 10, 2, 3, 0),
                         SleepQuality.GOOD
                 ),
                 new SleepingSession(
-                        LocalDateTime.of(2025, 10, 3, 7, 0),
-                        LocalDateTime.of(2025, 10, 3, 11, 0),
+                        LocalDateTime.of(2025, 10, 2, 23, 0),
+                        // Ночной сон (ночь 02.10)
+                        LocalDateTime.of(2025, 10, 3, 6, 0),
                         SleepQuality.GOOD
                 )
         );
-        assertEquals(1L, BasicAnalyzers.sleeplessNightsCount().analyze(sessions4));
+        assertEquals(0L, analyzer.analyze(sessions));
     }
 
     @Test
-    public void testSleeplessNightsCountDaytimeSleepOnly() {
-        // Тест 5: Дневной сон после 12:00
-        List<SleepingSession> sessions5 = Arrays.asList(
-                new SleepingSession(
-                        LocalDateTime.of(2025, 10, 1, 14, 0),
-                        LocalDateTime.of(2025, 10, 1, 15, 0),
-                        SleepQuality.GOOD
-                )
-        );
-        assertEquals(0L, BasicAnalyzers.sleeplessNightsCount().analyze(sessions5));
-    }
-
-    @Test
-    public void testSleeplessNightsCountTwoSleeplessNights() {
-        // Тест 6: Две ночи, обе бессонные
-        List<SleepingSession> sessions6 = Arrays.asList(
+    public void testSleeplessNightsCountWithSleeplessNights() {
+        SleepAnalyzer analyzer = new SleeplessNightsCount();
+        // Утренний сон - означает бессонную ночь
+        List<SleepingSession> sessions = Arrays.asList(
                 new SleepingSession(
                         LocalDateTime.of(2025, 10, 1, 7, 0),
+                        // Утренний сон (ночь 01.10 бессонная)
                         LocalDateTime.of(2025, 10, 1, 11, 0),
                         SleepQuality.GOOD
                 ),
                 new SleepingSession(
                         LocalDateTime.of(2025, 10, 2, 14, 0),
+                        // Дневной сон (ночь 02.10 бессонная)
                         LocalDateTime.of(2025, 10, 2, 15, 0),
                         SleepQuality.GOOD
                 )
         );
-        assertEquals(2L, BasicAnalyzers.sleeplessNightsCount().analyze(sessions6));
+        assertEquals(2L, analyzer.analyze(sessions));
     }
 
     @Test
-    public void testSleeplessNightsCountCrossMonthBoundary() {
-        // Тест 7: Пересечение границы месяца
-        List<SleepingSession> sessions7 = Arrays.asList(
-                new SleepingSession(
-                        LocalDateTime.of(2025, 9, 30, 23, 0),
-                        LocalDateTime.of(2025, 10, 1, 6, 0),
-                        SleepQuality.GOOD
-                ),
+    public void testSleeplessNightsCountMixed() {
+        SleepAnalyzer analyzer = new SleeplessNightsCount();
+        // Смесь ночных и дневных сессий
+        List<SleepingSession> sessions = Arrays.asList(
                 new SleepingSession(
                         LocalDateTime.of(2025, 10, 1, 23, 0),
-                        LocalDateTime.of(2025, 10, 2, 6, 0),
+                        // Ночной сон (ночь 01.10 со сном)
+                        LocalDateTime.of(2025, 10, 2, 3, 0),
                         SleepQuality.GOOD
                 ),
                 new SleepingSession(
-                        LocalDateTime.of(2025, 10, 3, 7, 0),
-                        LocalDateTime.of(2025, 10, 3, 11, 0),
+                        LocalDateTime.of(2025, 10, 2, 14, 0),
+                        // Дневной сон (ночь 02.10 бессонная)
+                        LocalDateTime.of(2025, 10, 2, 15, 0),
+                        SleepQuality.GOOD
+                ),
+                new SleepingSession(
+                        LocalDateTime.of(2025, 10, 3, 23, 0),
+                        // Ночной сон (ночь 03.10 со сном)
+                        LocalDateTime.of(2025, 10, 4, 6, 0),
                         SleepQuality.GOOD
                 )
         );
-        assertEquals(1L, BasicAnalyzers.sleeplessNightsCount().analyze(sessions7));
+        assertEquals(1L, analyzer.analyze(sessions));
     }
 
-    @Test
-    public void testSleeplessNightsCountEmptyList() {
-        // Тест 8: Пустой список сессий
-        List<SleepingSession> sessions = Collections.emptyList();
-        assertEquals(0L, BasicAnalyzers.sleeplessNightsCount().analyze(sessions));
-    }
-
-    // ========== Тесты для determineChronotype() ==========
+    // ========== Тесты для DetermineChronotype ==========
 
     @Test
     public void testDetermineChronotypeEmptyList() {
-        List<SleepingSession> sessions = Collections.emptyList();
-        assertEquals("Недостаточно данных", BasicAnalyzers.determineChronotype().analyze(sessions));
+        SleepAnalyzer analyzer = new DetermineChronotype();
+        assertEquals("Недостаточно данных", analyzer.analyze(Collections.emptyList()));
     }
 
     @Test
     public void testDetermineChronotypeLark() {
-        // Тест 1: Жаворонок - сон с 21:00 до 6:00
-        List<SleepingSession> sessions1 = Arrays.asList(
+        SleepAnalyzer analyzer = new DetermineChronotype();
+        List<SleepingSession> sessions = Arrays.asList(
                 new SleepingSession(
                         LocalDateTime.of(2025, 10, 1, 21, 0),
+                        // Жаворонок (ночь 01.10)
                         LocalDateTime.of(2025, 10, 2, 6, 0),
                         SleepQuality.GOOD
                 ),
                 new SleepingSession(
                         LocalDateTime.of(2025, 10, 2, 20, 30),
+                        // Жаворонок (ночь 02.10)
                         LocalDateTime.of(2025, 10, 3, 5, 30),
                         SleepQuality.GOOD
                 )
         );
-        assertEquals("Жаворонок", BasicAnalyzers.determineChronotype().analyze(sessions1));
+        assertEquals("Жаворонок", analyzer.analyze(sessions));
     }
 
     @Test
     public void testDetermineChronotypeOwl() {
-        // Тест 2: Сова - сон с 23:30 до 9:30
-        List<SleepingSession> sessions2 = Arrays.asList(
+        SleepAnalyzer analyzer = new DetermineChronotype();
+        List<SleepingSession> sessions = Arrays.asList(
                 new SleepingSession(
                         LocalDateTime.of(2025, 10, 1, 23, 30),
+                        // Сова (ночь 01.10)
                         LocalDateTime.of(2025, 10, 2, 9, 30),
                         SleepQuality.GOOD
                 ),
                 new SleepingSession(
                         LocalDateTime.of(2025, 10, 2, 0, 15),
+                        // Сова (ночь 02.10)
                         LocalDateTime.of(2025, 10, 3, 10, 0),
                         SleepQuality.GOOD
                 )
         );
-        assertEquals("Сова", BasicAnalyzers.determineChronotype().analyze(sessions2));
+        assertEquals("Сова", analyzer.analyze(sessions));
     }
 
     @Test
     public void testDetermineChronotypeDove() {
-        // Тест 3: Голубь - промежуточное время
-        List<SleepingSession> sessions3 = Arrays.asList(
+        SleepAnalyzer analyzer = new DetermineChronotype();
+        List<SleepingSession> sessions = Arrays.asList(
                 new SleepingSession(
                         LocalDateTime.of(2025, 10, 1, 22, 30),
+                        // Голубь (ночь 01.10)
                         LocalDateTime.of(2025, 10, 2, 7, 30),
                         SleepQuality.GOOD
                 ),
                 new SleepingSession(
                         LocalDateTime.of(2025, 10, 2, 22, 0),
+                        // Голубь (ночь 02.10)
                         LocalDateTime.of(2025, 10, 3, 8, 0),
                         SleepQuality.GOOD
                 )
         );
-        assertEquals("Голубь", BasicAnalyzers.determineChronotype().analyze(sessions3));
+        assertEquals("Голубь", analyzer.analyze(sessions));
     }
 
     @Test
-    public void testDetermineChronotypeMixedWithDaytimeSessions() {
-        // Тест 4: Смешанные данные с дневными сессиями
-        List<SleepingSession> sessions4 = Arrays.asList(
+    public void testDetermineChronotypeTieBreakToDove() {
+        SleepAnalyzer analyzer = new DetermineChronotype();
+        // Ничья между Жаворонком и Совой -> Голубь
+        List<SleepingSession> sessions = Arrays.asList(
                 new SleepingSession(
-                        LocalDateTime.of(2025, 10, 1, 23, 30),
-                        LocalDateTime.of(2025, 10, 2, 9, 30),
-                        SleepQuality.GOOD
-                ),
-                new SleepingSession(
-                        LocalDateTime.of(2025, 10, 2, 14, 0),
-                        LocalDateTime.of(2025, 10, 2, 15, 0),
-                        SleepQuality.NORMAL
-                ),
-                new SleepingSession(
-                        LocalDateTime.of(2025, 10, 2, 23, 45),
-                        LocalDateTime.of(2025, 10, 3, 8, 45),
-                        SleepQuality.GOOD
-                ),
-                new SleepingSession(
-                        LocalDateTime.of(2025, 10, 3, 13, 30),
-                        LocalDateTime.of(2025, 10, 3, 14, 15),
-                        SleepQuality.GOOD
-                )
-        );
-        assertEquals("Сова", BasicAnalyzers.determineChronotype().analyze(sessions4));
-    }
-
-    @Test
-    public void testDetermineChronotypeTieBreak() {
-        // Тест 5: Ничья между типами -> Голубь
-        List<SleepingSession> sessions5 = Arrays.asList(
-                new SleepingSession(
-                        LocalDateTime.of(2025, 10, 1, 21, 0), // Жаворонок
+                        LocalDateTime.of(2025, 10, 1, 21, 0),
+                        // Жаворонок (ночь 01.10)
                         LocalDateTime.of(2025, 10, 2, 6, 0),
                         SleepQuality.GOOD
                 ),
                 new SleepingSession(
-                        LocalDateTime.of(2025, 10, 2, 23, 30), // Сова
+                        LocalDateTime.of(2025, 10, 2, 23, 30),
+                        // Сова (ночь 02.10)
                         LocalDateTime.of(2025, 10, 3, 9, 30),
-                        SleepQuality.GOOD
-                ),
-                new SleepingSession(
-                        LocalDateTime.of(2025, 10, 3, 22, 30), // Голубь
-                        LocalDateTime.of(2025, 10, 4, 7, 30),
                         SleepQuality.GOOD
                 )
         );
-        // Должен вернуть "Голубь" по правилу ничьей
-        assertEquals("Голубь", BasicAnalyzers.determineChronotype().analyze(sessions5));
+        assertEquals("Голубь", analyzer.analyze(sessions));
     }
 
     @Test
-    public void testBasicAnalyzers() {
-        // Комплексный тест нескольких функций
+    public void testDetermineChronotypeMultipleSessionsInOneNight() {
+        SleepAnalyzer analyzer = new DetermineChronotype();
+        // Несколько сессий в одну ночь - должны агрегироваться
+        List<SleepingSession> sessions = Arrays.asList(
+                new SleepingSession(
+                        LocalDateTime.of(2025, 10, 1, 23, 0),
+                        // Сова (ночь 01.10)
+                        LocalDateTime.of(2025, 10, 2, 3, 0),
+                        SleepQuality.GOOD
+                ),
+                new SleepingSession(
+                        LocalDateTime.of(2025, 10, 2, 4, 0),
+                        // Продолжение сна (ночь 01.10)
+                        LocalDateTime.of(2025, 10, 2, 7, 0),
+                        SleepQuality.GOOD
+                ),
+                new SleepingSession(
+                        LocalDateTime.of(2025, 10, 2, 23, 30),
+                        // Сова (ночь 02.10)
+                        LocalDateTime.of(2025, 10, 3, 9, 30),
+                        SleepQuality.GOOD
+                )
+        );
+        assertEquals("Сова", analyzer.analyze(sessions));
+    }
+
+    @Test
+    public void testDetermineChronotypeOnlyDaytimeSessions() {
+        SleepAnalyzer analyzer = new DetermineChronotype();
+        // Только дневные сессии - недостаточно данных
+        List<SleepingSession> sessions = Arrays.asList(
+                new SleepingSession(
+                        LocalDateTime.of(2025, 10, 1, 14, 0),
+                        // Дневной сон
+                        LocalDateTime.of(2025, 10, 1, 15, 0),
+                        SleepQuality.GOOD
+                ),
+                new SleepingSession(
+                        LocalDateTime.of(2025, 10, 2, 13, 0),
+                        // Дневной сон
+                        LocalDateTime.of(2025, 10, 2, 14, 0),
+                        SleepQuality.GOOD
+                )
+        );
+        assertEquals("Недостаточно данных", analyzer.analyze(sessions));
+    }
+
+    // ========== Тесты для SleepingSession ==========
+
+    @Test
+    public void testSleepingSessionGetters() {
+        LocalDateTime start = LocalDateTime.of(2025, 10, 1, 22, 0);
+        LocalDateTime end = LocalDateTime.of(2025, 10, 2, 6, 0);
+        SleepingSession session = new SleepingSession(start, end, SleepQuality.GOOD);
+
+        assertEquals(start, session.getSleepStart());
+        assertEquals(end, session.getSleepEnd());
+        assertEquals(SleepQuality.GOOD, session.getQuality());
+        assertEquals(480L, session.getDurationMinutes());
+    }
+
+    @Test
+    public void testIntersectsNightDaytimeSleep() {
+        // Дневной сон не пересекает ночь
+        SleepingSession session = new SleepingSession(
+                LocalDateTime.of(2025, 10, 1, 14, 0),
+                LocalDateTime.of(2025, 10, 1, 15, 0),
+                SleepQuality.GOOD
+        );
+        assertFalse(session.intersectsNight(LocalDate.of(2025, 10, 1)));
+    }
+
+    @Test
+    public void testIntersectsNightMorningSleep() {
+        // Утренний сон не пересекает ночь
+        SleepingSession session = new SleepingSession(
+                LocalDateTime.of(2025, 10, 1, 7, 0),
+                LocalDateTime.of(2025, 10, 1, 11, 0),
+                SleepQuality.GOOD
+        );
+        assertFalse(session.intersectsNight(LocalDate.of(2025, 10, 1)));
+    }
+
+    @Test
+    public void testIntersectsNightNightSleep() {
+        // Ночной сон пересекает ночь
+        SleepingSession session = new SleepingSession(
+                LocalDateTime.of(2025, 10, 1, 23, 0),
+                LocalDateTime.of(2025, 10, 2, 3, 0),
+                SleepQuality.GOOD
+        );
+        assertFalse(session.intersectsNight(LocalDate.of(2025, 10, 1)));
+        // Не пересекает ночь 01.10
+        assertTrue(session.intersectsNight(LocalDate.of(2025, 10, 2)));
+        // Пересекает ночь 02.10
+    }
+
+    @Test
+    public void testIntersectsNightSleepCrossingMidnight() {
+        // Сон через полночь
+        SleepingSession session = new SleepingSession(
+                LocalDateTime.of(2025, 10, 1, 20, 0),
+                LocalDateTime.of(2025, 10, 2, 2, 0),
+                SleepQuality.GOOD
+        );
+        assertFalse(session.intersectsNight(LocalDate.of(2025, 10, 1)));
+        // Не пересекает ночь 01.10
+        assertTrue(session.intersectsNight(LocalDate.of(2025, 10, 2)));
+        // Пересекает ночь 02.10
+    }
+
+    @Test
+    public void testIntersectsNightEarlyMorningSleep() {
+        // Сон ранним утром (1:00-5:00)
+        SleepingSession session = new SleepingSession(
+                LocalDateTime.of(2025, 10, 1, 1, 0),
+                LocalDateTime.of(2025, 10, 1, 5, 0),
+                SleepQuality.GOOD
+        );
+        assertTrue(session.intersectsNight(LocalDate.of(2025, 10, 1)));
+        // Пересекает ночь 01.10
+    }
+
+    // ========== Комплексный тест ==========
+
+    @Test
+    public void testComplexScenario() {
+        // Комплексный сценарий со всеми типами данных
         List<SleepingSession> sessions = Arrays.asList(
                 new SleepingSession(
                         LocalDateTime.of(2025, 10, 1, 22, 0),
+                        // Голубь, 480 мин, GOOD
                         LocalDateTime.of(2025, 10, 2, 6, 0),
                         SleepQuality.GOOD
                 ),
                 new SleepingSession(
                         LocalDateTime.of(2025, 10, 2, 14, 30),
+                        // Дневной сон, 50 мин, NORMAL
                         LocalDateTime.of(2025, 10, 2, 15, 20),
                         SleepQuality.NORMAL
                 ),
                 new SleepingSession(
                         LocalDateTime.of(2025, 10, 2, 23, 0),
+                        // Голубь, 480 мин, BAD
                         LocalDateTime.of(2025, 10, 3, 7, 0),
                         SleepQuality.BAD
+                ),
+                new SleepingSession(
+                        LocalDateTime.of(2025, 10, 3, 21, 0),
+                        // Жаворонок, 540 мин, GOOD
+                        LocalDateTime.of(2025, 10, 4, 6, 0),
+                        SleepQuality.GOOD
                 )
         );
 
-        assertEquals(3, BasicAnalyzers.totalSessionsCount().analyze(sessions));
-        assertEquals(50L, BasicAnalyzers.minDuration().analyze(sessions));
-        assertEquals(480L, BasicAnalyzers.maxDuration().analyze(sessions));
-        assertEquals(336.7, (Double) BasicAnalyzers.averageDuration().analyze(sessions), 0.1);
-        assertEquals(1L, BasicAnalyzers.badQualitySessionsCount().analyze(sessions));
+        assertEquals(4, new TotalSessionsCount().analyze(sessions));
+        assertEquals(50L, new MinDuration().analyze(sessions));
+        assertEquals(540L, new MaxDuration().analyze(sessions));
+        assertEquals(387.5, (Double) new AverageDuration().analyze(sessions), 0.1);
+        assertEquals(1L, new BadQualitySessionsCount().analyze(sessions));
+        assertEquals(0L, new SleeplessNightsCount().analyze(sessions));
+        assertEquals("Голубь", new DetermineChronotype().analyze(sessions));
     }
 }
